@@ -517,4 +517,11 @@ config LOONGSON2_THERMAL
 	  is higher than the high temperature threshold or lower than the low
 	  temperature threshold, the interrupt will occur.
 
+config RTD129X_THERMAL
+	bool "Realtek RTD129x thermal sensor (vendor port)"
+	depends on ARCH_REALTEK
+	help
+	  On-die thermal sensor of the Realtek RTD1295/RTD1296 SoCs,
+	  ported from the vendor 4.9 kernel.
+
 endif
