@@ -7,7 +7,7 @@
 
 /memreserve/	0x0000000000000000 0x000000000001f000;
 /memreserve/	0x000000000001f000 0x00000000000e1000;
-/memreserve/	0x0000000001b00000 0x00000000004be000;
+/memreserve/	0x0000000001b00000 0x0000000000400000;
 
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/reset/realtek,rtd1295.h>
@@ -70,6 +70,86 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0x0 0x0 0x1800>;
+
+				clk_en_crt: clock-gate@c {
+					compatible = "realtek,rtd1295-clock-gate";
+					reg = <0xc 0x4>;
+					#clock-cells = <1>;
+
+					clock-output-names =
+						"clk_en_misc",
+						"clk_en_pcie0",
+						"clk_en_sata_0",
+						"clk_en_gspi",
+						"clk_en_usb",
+						"",
+						"clk_en_iso_misc",
+						"clk_en_sata_alive_0",
+						"clk_en_hdmi",
+						"clk_en_etn",
+						"", "", "", "", "", "",
+						"clk_en_lvds",
+						"clk_en_se",
+						"",
+						"clk_en_cp",
+						"clk_en_md",
+						"clk_en_tp",
+						"",
+						"clk_en_nf",
+						"clk_en_emmc",
+						"clk_en_cr",
+						"clk_en_sdio_ip",
+						"clk_en_mipi",
+						"clk_en_emmc_ip",
+						"",
+						"clk_en_sdio",
+						"clk_en_sd_ip";
+
+					ignore-unused-clocks =
+						"clk_en_misc",
+						"clk_en_usb",
+						"clk_en_iso_misc",
+						"clk_en_cp",
+						"clk_en_md",
+						"clk_en_tp",
+						"clk_en_hdmi";
+				};
+
+				clk_en_crt2: clock-gate@10 {
+					compatible = "realtek,rtd1295-clock-gate";
+					reg = <0x10 0x4>;
+					#clock-cells = <1>;
+
+					clock-output-names =
+						"clk_en_nat",
+						"clk_en_misc_i2c_5",
+						"",
+						"clk_en_jpeg",
+						"",
+						"clk_en_pcie1",
+						"clk_en_misc_sc",
+						"clk_en_cbus_tx",
+						"", "",
+						"clk_en_misc_rtc",
+						"", "",
+						"clk_en_misc_i2c_4",
+						"clk_en_misc_i2c_3",
+						"clk_en_misc_i2c_2",
+						"clk_en_misc_i2c_1",
+						"", "", "", "", "", "", "",
+						"clk_en_hdmirx",
+						"clk_en_sata_1",
+						"clk_en_sata_alive_1",
+						"clk_en_ur2",
+						"clk_en_ur1",
+						"clk_en_fan",
+						"clk_en_dcphy_0",
+						"clk_en_dcphy_1";
+
+					ignore-unused-clocks =
+						"clk_en_dcphy_0",
+						"clk_en_dcphy_1";
+				};
 			};
 
 			iso: syscon@7000 {
@@ -79,6 +159,30 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0x0 0x7000 0x1000>;
+				clk_en_iso: clock-gate@8c {
+					compatible = "realtek,rtd1295-clock-gate";
+					reg = <0x8c 0x4>;
+					#clock-cells = <1>;
+
+					clock-output-names =
+						"", "",
+						"clk_en_misc_cec0",
+						"clk_en_cbusrx_sys",
+						"clk_en_cbustx_sys",
+						"clk_en_cbus_sys",
+						"clk_en_cbus_osc",
+						"clk_en_misc_ir",
+						"clk_en_misc_ur0",
+						"clk_en_i2c0",
+						"clk_en_i2c1",
+						"clk_en_etn_250m",
+						"clk_en_etn_sys";
+
+					ignore-unused-clocks =
+						"clk_en_misc_ur0",
+						"clk_en_etn_250m",
+						"clk_en_etn_sys";
+				};
 			};
 
 			sb2: syscon@1a000 {
@@ -106,6 +210,157 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0x0 0x1d000 0x2000>;
+			};
+
+			mux_intc: interrupt-controller@1b000 {
+				compatible = "Realtek,rtk-irq-mux";
+				status = "okay";
+
+				interrupt-controller;
+				#interrupt-cells = <2>;
+
+				Realtek,mux-nr = <2>;
+				intr-status = <0x0c 0x00>;
+				intr-en = <0x80 0x40>;
+
+				interrupt-parent = <&gic>;
+				interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
+					     <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
+
+				reg = <0x1b000 0x100>,
+				      <0x7000 0x100>;
+			};
+
+			rtk_iso_gpio: gpio@7100 {
+				compatible = "realtek,rtd1295-iso-gpio";
+				reg = <0x7100 0x100>,
+				      <0x7000 0x10>;
+
+				interrupt-parent = <&mux_intc>;
+				interrupts = <1 19>, <1 20>;
+
+				gpio-controller;
+				#gpio-cells = <2>;
+				status = "okay";
+			};
+
+			misc_gpio: gpio@1b100 {
+				compatible = "realtek,rtd1295-misc-gpio";
+				reg = <0x1b100 0x100>,
+				      <0x1b000 0x100>;
+
+				interrupt-parent = <&mux_intc>;
+				interrupts = <0 19>, <0 20>;
+
+				gpio-controller;
+				#gpio-cells = <2>;
+				status = "okay";
+			};
+
+
+			usb2phy_drd: usb-phy@28280 {
+				compatible = "realtek,rtd1295-usb2phy";
+				reg = <0x28280 0x4>,
+				      <0x13214 0x4>;
+				#phy-cells = <0>;
+				status = "okay";
+			};
+
+			usb3phy_drd: usb-phy@13210 {
+				compatible = "realtek,rtd1295-usb3phy";
+				reg = <0x13210 0x4>;
+				#phy-cells = <0>;
+				status = "okay";
+			};
+
+			usb_wrap_drd: usb@13200 {
+				compatible = "realtek,rtd1295-dwc3",
+					     "realtek,rtd-dwc3";
+				reg = <0x13200 0x200>;
+
+				#address-cells = <1>;
+				#size-cells = <1>;
+				ranges;
+
+				status = "okay";
+
+				usb_drd: usb@20000 {
+					compatible = "snps,dwc3";
+					reg = <0x20000 0x9000>;
+					interrupts = <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
+
+					phys = <&usb2phy_drd>,
+					       <&usb3phy_drd>;
+					phy-names = "usb2-phy", "usb3-phy";
+
+					dr_mode = "host";
+
+					resets = <&reset1 RTD1295_RSTN_USB>,
+						 <&reset1 RTD1295_RSTN_USB_PHY0>,
+						 <&reset1 RTD1295_RSTN_USB3_PHY0_POW>,
+						 <&reset1 RTD1295_RSTN_USB3_P0_MDIO>;
+
+					snps,dis_u2_susphy_quirk;
+					snps,parkmode-disable-ss-quirk;
+				};
+			};
+
+
+			sata_phy: sata-phy@3ff00 {
+				compatible = "Realtek,rtk-sata-phy";
+				reg = <0x3ff00 0x100>,
+				      <0x1a980 0x10>;
+
+				#address-cells = <1>;
+				#size-cells = <0>;
+				#phy-cells = <1>;
+
+				clocks = <&clk_en_crt 7>;
+
+				status = "disabled";
+
+				sata_phy0: sata-phy@0 {
+					reg = <0>;
+					resets = <&reset1 RTD1295_RSTN_SATA_PHY_POW_0>;
+				};
+
+				sata_phy1: sata-phy@1 {
+					reg = <1>;
+					resets = <&reset4 RTD1295_RSTN_SATA_PHY_POW_1>;
+				};
+			};
+
+			sata: sata@3f000 {
+				compatible = "realtek,rtd1295-ahci";
+				reg = <0x3f000 0xf00>;
+				interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
+
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				clocks = <&clk_en_crt 2>,
+					 <&clk_en_crt 7>,
+					 <&clk_en_crt2 25>,
+					 <&clk_en_crt2 26>;
+
+				resets = <&reset1 RTD1295_RSTN_SATA_0>,
+					 <&reset1 RTD1295_RSTN_SATA_PHY_0>,
+					 <&reset4 RTD1295_RSTN_SATA_1>,
+					 <&reset4 RTD1295_RSTN_SATA_PHY_1>;
+
+				ports-implemented = <0x3>;
+
+				status = "disabled";
+
+				sata_port0: sata-port@0 {
+					reg = <0>;
+					phys = <&sata_phy 0>;
+				};
+
+				sata_port1: sata-port@1 {
+					reg = <1>;
+					phys = <&sata_phy 1>;
+				};
 			};
 		};
 
