@@ -29,4 +29,11 @@ config PHY_RTK_RTD_USB3PHY
 	  DWC3 USB IP. This driver will do the PHY initialization
 	  of the parameters.
 
+config PHY_RTK_RTD_SATAPHY
+	tristate "Realtek RTD129x SATA PHY (vendor)"
+	select GENERIC_PHY
+	help
+	  Vendor-style SATA PHY driver for Realtek RTD129x.
+	  This exists for bring-up to support SATA on WD My Cloud Home.
+
 endif # ARCH_REALTEK || COMPILE_TEST

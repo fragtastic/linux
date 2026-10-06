@@ -171,6 +171,18 @@ config AHCI_BRCM
 
 	  If unsure, say N.
 
+config AHCI_RTD1295
+	tristate "Realtek RTD1295 AHCI SATA support"
+	depends on ARCH_REALTEK || COMPILE_TEST
+	select SATA_HOST
+	help
+	  This option enables support for the AHCI SATA controller found
+	  on the Realtek RTD1295 SoC. It applies two vendor-extension
+	  register writes the generic AHCI platform driver does not know
+	  about; without them the SATA PHY never links up.
+
+	  If unsure, say N.
+
 config AHCI_DA850
 	tristate "DaVinci DA850 AHCI SATA support"
 	depends on ARCH_DAVINCI_DA850 || COMPILE_TEST
