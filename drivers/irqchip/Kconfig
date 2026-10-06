@@ -823,4 +823,13 @@ config SUNPLUS_SP7021_INTC
 	  chained controller, routing all interrupt source in P-Chip to
 	  the primary controller on C-Chip.
 
+config IRQ_RTD129X_MUX
+	bool "Realtek RTD129x IRQ mux (vendor)"
+	depends on OF && ARM_GIC
+	select IRQ_DOMAIN
+	help
+	  Vendor IRQ mux driver used on Realtek RTD129x SoCs.
+
+	  DT compatible: "Realtek,rtk-irq-mux".
+
 endmenu
