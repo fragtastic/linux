@@ -1,0 +1,98 @@
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+
+#include "rtd1296.dtsi"
+
+/ {
+	model = "ASUSTOR AS1102T";
+	compatible = "asustor,as1102t", "realtek,rtd1296";
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x40000000>;
+	};
+
+	sata0_power: regulator-sata0-power {
+		compatible = "regulator-fixed";
+		regulator-name = "sata0-power";
+		gpio = <&misc_gpio 56 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	sata1_power: regulator-sata1-power {
+		compatible = "regulator-fixed";
+		regulator-name = "sata1-power";
+		gpio = <&rtk_iso_gpio 15 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	aliases {
+		serial0 = &uart0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&uart0 {
+	interrupt-parent = <&mux_intc>;
+	interrupts = <1 2>;
+	interrupts-st-mask = <0x4>;
+	status = "okay";
+};
+
+&sata_phy {
+	status = "okay";
+};
+
+&sata_phy0 {
+	spread-spectrum = <0>;
+	tx-driving = <2>;
+	tx-driving-tbl =
+		<0x94a72011 0x94a76011 0x94afa011
+		 0x587a2111 0x587a6111 0xd8faa111>;
+};
+
+&sata_phy1 {
+	spread-spectrum = <0>;
+	tx-driving = <2>;
+	tx-driving-tbl =
+		<0x94a42011 0x94a46011 0x94afa011
+		 0x384a2111 0x384a6111 0xd8faa111>;
+};
+
+&sata {
+	status = "okay";
+};
+
+&sata_port0 {
+	target-supply = <&sata0_power>;
+};
+
+&sata_port1 {
+	target-supply = <&sata1_power>;
+};
+
+&cpu0 {
+	enable-method = "rtk-spin-table";
+	cpu-release-addr = <0x0 0x9801aa44>;
+};
+
+&cpu1 {
+	enable-method = "rtk-spin-table";
+	cpu-release-addr = <0x0 0x9801aa44>;
+};
+
+&cpu2 {
+	enable-method = "rtk-spin-table";
+	cpu-release-addr = <0x0 0x9801aa44>;
+};
+
+&cpu3 {
+	enable-method = "rtk-spin-table";
+	cpu-release-addr = <0x0 0x9801aa44>;
+};
