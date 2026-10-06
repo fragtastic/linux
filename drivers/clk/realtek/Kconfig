@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config CLK_RTD129X_SCPU
+	tristate "Realtek RTD129x SCPU (CPU) PLL clock"
+	depends on ARCH_REALTEK || COMPILE_TEST
+	depends on MFD_SYSCON
+	help
+	  This enables the CPU PLL clock driver for Realtek RTD129x SoCs,
+	  needed for CPU frequency scaling (cpufreq-dt).
+
+config CLK_RTD129X_GATE
+	bool "Realtek RTD129x clock gate controllers"
+	depends on ARCH_REALTEK || COMPILE_TEST
+	default ARCH_REALTEK
+	help
+	  This enables the clock gate controllers found in the CRT and ISO
+	  register blocks of Realtek RTD129x SoCs.  SATA, PCIe, I2C and the
+	  other peripherals cannot be brought out of reset without them.
